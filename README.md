@@ -1,0 +1,1 @@
+# open_ssl_nginx_kind_cluster
