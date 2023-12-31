@@ -69,7 +69,7 @@ The output shows the progress of the operation. When the cluster successfully in
         
         pod/ingress-nginx-controller-6f9b5dd966-zkj2c condition met
 
-Check if it works
+**Step 3 : Deploy and test sample application**
 
 # apply ingress test manifests
 
@@ -88,19 +88,87 @@ Check if it works
         NAME          READY   STATUS    RESTARTS   AGE
         pod/bar-app   1/1     Running   0          46s
         pod/foo-app   1/1     Running   0          46s
-To make ingress.local available in local browser, add to the /etc/hosts line:
+
+To make ingress.local available in local browser, add to the /etc/hosts line.
 
 127.0.0.1 ingress.local – in my case cluster is running at 127.0.0.1.
-
-# test ingress
-curl ingress.local/foo/hostname
-foo-app
-curl ingress.local/bar/hostname
-bar-app
+public_ip ingress.local - if cluster is running on any cloud
 
 
+![image](https://github.com/tushardashpute/open_ssl_nginx_kind_cluster/assets/74225291/7b3bf219-4599-40b0-bb8b-ea0abb9b07e1)
 
 
+        # test ingress
+        curl ingress.local/foo/hostname
+        foo-app
+        curl ingress.local/bar/hostname
+        bar-app
+
+if you want to access it from local browser, you can use public IP of instance.
+
+**Step. 4 Add TLS encryption with self-signed certificate to enable HTTPs**
+
+Until now, pod is exposed using Ingress, but the connection is over HTTP and therefore it is unencrypted. 
+Let’s add some security to the server. First, create certifiates using openssl, then create kubernetes Secret of type ssl. 
+And finally utilize it in Ingress resource.
+
+1. Create self-signed certificate
+
+        $ openssl req \
+        -x509 -newkey rsa:4096 -sha256 -nodes \
+        -keyout tls.key -out tls.crt \
+        -subj "/CN=ingress.local" -days 365
+        
+        Generating a 4096 bit RSA private key
+        ........++
+        ...................................................................................................++
+        writing new private key to 'tls.key'
+        -----
+        
+        $ ls
+        tls.crt  tls.key
+
+2. Create kubernetes secret with those keys
+
+        $ kubectl create secret tls ingress-local-tls \
+          --cert=tls.crt \
+          --key=tls.key
+        
+        secret/ingress-local-tls created
+
+3. Make changes to Ingress
+
+        $ cat <<EOF | k apply -f-
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: example-ingress
+          annotations:
+            nginx.ingress.kubernetes.io/rewrite-target: /$2
+        spec:
+          tls:                                # add those 4 lines
+          - hosts:                            #
+              - ingress.local                 #
+            secretName: ingress-local-tls     #
+          rules:
+          - host: ingress.local
+            http:
+              paths:
+              - pathType: Prefix
+                path: /foo(/|$)(.*)
+                backend:
+                  service:
+                    name: foo-service
+                    port:
+                      number: 8080
+              - pathType: Prefix
+                path: /bar(/|$)(.*)
+                backend:
+                  service:
+                    name: bar-service
+                    port:
+                      number: 8080
+        EOF
 
 
 
