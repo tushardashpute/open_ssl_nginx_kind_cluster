@@ -138,7 +138,7 @@ And finally utilize it in Ingress resource.
 
 3. Make changes to Ingress
 
-        $ cat <<EOF | k apply -f-
+        cat <<EOF | k apply -f-
         apiVersion: networking.k8s.io/v1
         kind: Ingress
         metadata:
@@ -168,7 +168,7 @@ And finally utilize it in Ingress resource.
                     name: bar-service
                     port:
                       number: 8080
-        EOF
+   EOF
 
 
 
