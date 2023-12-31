@@ -138,39 +138,45 @@ And finally utilize it in Ingress resource.
 
 3. Make changes to Ingress
 
-        cat <<EOF | k apply -f-
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        metadata:
-          name: example-ingress
-          annotations:
-            nginx.ingress.kubernetes.io/rewrite-target: /$2
         spec:
           tls:                                # add those 4 lines
           - hosts:                            #
               - ingress.local                 #
             secretName: ingress-local-tls     #
-          rules:
-          - host: ingress.local
-            http:
-              paths:
-              - pathType: Prefix
-                path: /foo(/|$)(.*)
-                backend:
-                  service:
-                    name: foo-service
-                    port:
-                      number: 8080
-              - pathType: Prefix
-                path: /bar(/|$)(.*)
-                backend:
-                  service:
-                    name: bar-service
-                    port:
-                      number: 8080
-        EOF
 
+We have added above lines to use ingress cert which we create d in step 3.
 
+        kubectl apply -f https://raw.githubusercontent.com/tushardashpute/open_ssl_nginx_kind_cluster/main/ssl_ingress.yaml
 
+Check if everything has been done correctly:
 
+        $ curl https://ingress.local
+        curl: (60) SSL certificate problem: self signed certificate
+        More details here: https://curl.haxx.se/docs/sslcerts.html
+        curl failed to verify the legitimacy of the server and therefore could not
+        establish a secure connection to it. To learn more about this situation and
+        how to fix it, please visit the web page mentioned above.
 
+We can see that curl recognised our certificate, hence it is self-signed, it treats it like non-legit. 
+We know it is, so just pass --insecure flag to suppress this warning:
+
+        # curl --insecure https://ingress.local/foo/hostname
+        foo-app
+
+        or 
+
+        # curl --insecure https://localhost/foo/hostname
+        foo-app
+
+        or
+
+        # curl --insecure https://3.147.69.117/foo/hostname
+        foo-app
+        
+![image](https://github.com/tushardashpute/open_ssl_nginx_kind_cluster/assets/74225291/75edb9c8-c1cc-4f7e-94e1-e529061e2ebd)
+
+Similar situation will occur when we will try to access web page via browser:
+
+![image](https://github.com/tushardashpute/open_ssl_nginx_kind_cluster/assets/74225291/99fc0beb-fe4c-4fb6-be5a-5d95c97cb6b7)
+
+From now, every connection to our ingress.local site will be encrypted! 
