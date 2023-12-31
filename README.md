@@ -168,7 +168,7 @@ And finally utilize it in Ingress resource.
                     name: bar-service
                     port:
                       number: 8080
-   EOF
+        EOF
 
 
 
