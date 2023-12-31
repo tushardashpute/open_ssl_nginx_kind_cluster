@@ -1,0 +1,29 @@
+ apiVersion: networking.k8s.io/v1
+ kind: Ingress
+ metadata:
+   name: example-ingress
+   annotations:
+     nginx.ingress.kubernetes.io/rewrite-target: /$2
+ spec:
+   tls:                                # add those 4 lines
+   - hosts:                            #
+       - ingress.local                 #
+     secretName: ingress-local-tls     #
+   rules:
+   - host: ingress.local
+     http:
+       paths:
+       - pathType: Prefix
+         path: /foo(/|$)(.*)
+         backend:
+           service:
+             name: foo-service
+             port:
+               number: 8080
+       - pathType: Prefix
+         path: /bar(/|$)(.*)
+         backend:
+           service:
+             name: bar-service
+             port:
+               number: 8080
