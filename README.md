@@ -72,7 +72,25 @@ The output shows the progress of the operation. When the cluster successfully in
 Check if it works
 
 # apply ingress test manifests
-kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yaml
+
+        kubectl apply -f https://raw.githubusercontent.com/tushardashpute/open_ssl_nginx_kind_cluster/main/sample_app.yaml
+
+# Check the pod,service,ingress
+
+        kubectl get ing,svc,pod
+        NAME                                        CLASS    HOSTS           ADDRESS     PORTS   AGE
+        ingress.networking.k8s.io/example-ingress   <none>   ingress.local   localhost   80      45s
+        
+        NAME                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+        service/bar-service   ClusterIP   10.96.18.173    <none>        8080/TCP   45s
+        service/foo-service   ClusterIP   10.96.246.180   <none>        8080/TCP   46s
+        
+        NAME          READY   STATUS    RESTARTS   AGE
+        pod/bar-app   1/1     Running   0          46s
+        pod/foo-app   1/1     Running   0          46s
+To make ingress.local available in local browser, add to the /etc/hosts line:
+
+127.0.0.1 ingress.local – in my case cluster is running at 127.0.0.1.
 
 # test ingress
 curl ingress.local/foo/hostname
