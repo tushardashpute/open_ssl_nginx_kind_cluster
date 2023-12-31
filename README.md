@@ -2,7 +2,16 @@
 
 **Step 1: Create Kind Cluster**
 
-Create Cluster
+Install and start Docker daemon
+
+        yum install docker -y && service docker start
+
+Install Kind on Linux
+
+        curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.14.0/kind-linux-amd64
+        chmod +x ./kind
+        sudo mv ./kind /bin/kind
+        
 Create a kind cluster with extraPortMappings and node-labels.
 
 extraPortMappings allow the local host to make requests to the Ingress controller over ports 80/443
