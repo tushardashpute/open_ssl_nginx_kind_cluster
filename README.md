@@ -180,3 +180,8 @@ Similar situation will occur when we will try to access web page via browser:
 ![image](https://github.com/tushardashpute/open_ssl_nginx_kind_cluster/assets/74225291/99fc0beb-fe4c-4fb6-be5a-5d95c97cb6b7)
 
 From now, every connection to our ingress.local site will be encrypted! 
+
+
+Reference:
+- https://michalwojcik.com.pl/2021/08/08/ingress-tls-in-kubernetes-using-self-signed-certificates/
+- https://kind.sigs.k8s.io/docs/user/quick-start/#installation
