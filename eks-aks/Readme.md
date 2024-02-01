@@ -14,3 +14,9 @@ Step3 : Create nginx
 kubectl apply -f ingress_without_ssl.yaml
 
 Step4 : create ssl
+
+Follow "Step. 4 Add TLS encryption with self-signed certificate to enable HTTPs" of main readme
+
+Step5: create ingress with ssl
+
+kubectl apply -f ingress.yaml
